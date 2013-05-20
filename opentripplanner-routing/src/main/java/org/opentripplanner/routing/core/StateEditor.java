@@ -259,7 +259,7 @@ public class StateEditor {
             defectiveTraversal = true;
             return;
         }
-        child.time += (traversingBackward ? -milliseconds : milliseconds);
+        child.timeMilliseconds += (traversingBackward ? -milliseconds : milliseconds);
     }    
 
     public void incrementWalkDistance(double length) {
@@ -377,12 +377,12 @@ public class StateEditor {
     }
 
     public void setTimeSeconds(long seconds) {
-        child.time = seconds * 1000;
+        child.timeMilliseconds = seconds * 1000;
     }
 
     public void setStartTimeSeconds(long seconds) {
         cloneStateDataAsNeeded();
-        child.stateData.startTime = seconds;
+        child.stateData.startTimeSeconds = seconds;
     }
 
     /**

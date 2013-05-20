@@ -30,7 +30,7 @@ import org.opentripplanner.routing.patch.Alert;
 public class StateData implements Cloneable {
 
     // the time at which the search started
-    protected long startTime;
+    protected long startTimeSeconds;
 
     // which trip index inside a pattern
     protected TripTimes tripTimes;

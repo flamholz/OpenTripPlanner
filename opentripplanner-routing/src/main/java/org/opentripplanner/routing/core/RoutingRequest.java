@@ -106,7 +106,7 @@ public class RoutingRequest implements Cloneable, Serializable {
     /** The set of characteristics that the user wants to optimize for -- defaults to QUICK, or optimize for transit time. */
     public OptimizeType optimize = OptimizeType.QUICK;
 
-    /** The epoch date/time that the trip should depart (or arrive, for requests where arriveBy is true) */
+    /** The epoch date/time that the trip should depart (or arrive, for requests where arriveBy is true) in seconds */
     public long dateTime = new Date().getTime() / 1000;
 
     /** Whether the trip should depart at dateTime (false, the default), or arrive at dateTime. */

@@ -104,6 +104,7 @@ public class TriangleInequalityTest {
         prototypeOptions.setCarSpeed(1.0);
         prototypeOptions.setWalkSpeed(1.0);
         prototypeOptions.setBikeSpeed(1.0);
+        prototypeOptions.setWheelchairAccessible(false);
         prototypeOptions.setTraversalCostModel(new ConstantIntersectionTraversalCostModel(10.0));
         
         if (traverseModes != null) {
@@ -126,7 +127,10 @@ public class TriangleInequalityTest {
         double startEndWeight = path.getWeight();
         int startEndDuration = path.getDuration();
         assertTrue(startEndWeight > 0);
-        assertEquals(startEndWeight, (double) startEndDuration, 1.0 * path.edges.size());
+        
+        // At the second resolution, weight == time when reluctances == 1.0.
+        // Because of rounding, there is some wiggle room, but it is independent of the number of edges in the path.
+        assertEquals(startEndWeight, startEndDuration, 1.0);
         
         // Try every vertex in the graph as an intermediate.
         boolean violated = false;
@@ -151,11 +155,10 @@ public class TriangleInequalityTest {
             double intermediateEndWeight = intermediateEndPath.getWeight();
             int intermediateEndDuration = intermediateEndPath.getDuration();
             
-            // TODO(flamholz): fix traversal so that there's no rounding at the second resolution.
-            assertEquals(startIntermediateWeight, (double) startIntermediateDuration,
-                    1.0 * startIntermediatePath.edges.size());            
-            assertEquals(intermediateEndWeight, (double) intermediateEndDuration,
-                    1.0 * intermediateEndPath.edges.size());
+            // At the second resolution, weight == time when reluctances == 1.0.
+            // Because of rounding, there is some wiggle room, but it is independent of the number of edges in the path now.
+            assertEquals(startIntermediateWeight, startIntermediateDuration, 1.0);
+            assertEquals(intermediateEndWeight, intermediateEndDuration, 1.0);
             
             double diff = startIntermediateWeight + intermediateEndWeight - startEndWeight;
             if (diff < -0.01) {

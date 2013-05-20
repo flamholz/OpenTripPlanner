@@ -86,7 +86,7 @@ public class EarliestArrivalSPTService implements SPTService {
                         continue;
                     }
                     if (spt.add(v)) {
-                        pq.insert(v, v.getActiveTime()); // activeTime?
+                        pq.insert(v, v.getActiveTimeSeconds()); // activeTime?
                     } 
                 }
             }

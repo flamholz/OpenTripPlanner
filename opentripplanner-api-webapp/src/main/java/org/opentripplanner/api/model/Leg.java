@@ -15,6 +15,7 @@ package org.opentripplanner.api.model;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -269,5 +270,23 @@ public class Leg {
         calendar.setTime(endTime.getTime());
         endTime = calendar;
         agencyTimeZoneOffset = timeZone.getOffset(startTime.getTimeInMillis());
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<Leg").append(" mode=").append(this.mode);
+        if (this.startTime != null) {
+            sb.append(" startTime=").append(new Date(this.startTime.getTimeInMillis()));
+        }
+        if (this.endTime != null) {
+            sb.append(" endTime=").append(new Date(this.endTime.getTimeInMillis()));
+        }
+        sb.append(" routeType=").append(this.routeType);
+        sb.append(" routeShortName=").append(this.routeShortName);
+        sb.append(" agencyId=").append(this.agencyId);
+        sb.append(" tripId=").append(this.tripId);
+        sb.append(">");
+        return sb.toString();
     }
 }

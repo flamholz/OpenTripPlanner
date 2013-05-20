@@ -318,10 +318,15 @@ public class TestRequest extends TestCase {
 
         Response response = planner.getFirstTrip();
         Itinerary itinerary = response.getPlan().itinerary.get(0);
+        for (Leg l : itinerary.legs) {
+            System.out.println(l);
+        }
         Leg leg = itinerary.legs.get(1);
+
+        System.out.println(leg.startTime);
+        System.out.println(leg.startTime.get(Calendar.HOUR));
         assertTrue(leg.startTime.get(Calendar.HOUR) >= 4);
         assertTrue(leg.startTime.get(Calendar.HOUR) <= 7);
-
     }
 
     public void testAlerts() throws Exception {

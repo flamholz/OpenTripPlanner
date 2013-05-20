@@ -39,7 +39,7 @@ public class State implements Cloneable {
     /* Data which is likely to change at most traversals */
     
     // the current time at this state, in milliseconds
-    protected long time;
+    protected long timeMilliseconds;
 
     // accumulated weight up to this state
     protected double weight;
@@ -110,10 +110,10 @@ public class State implements Cloneable {
         // note that here we are breaking the circular reference between rctx and options
         // this should be harmless since reversed clones are only used when routing has finished
         this.stateData.opt = options;
-        this.stateData.startTime = timeSeconds;
+        this.stateData.startTimeSeconds = timeSeconds;
         this.stateData.usingRentedBike = false;
         this.walkDistance = 0;
-        this.time = timeSeconds * 1000;
+        this.timeMilliseconds = timeSeconds * 1000;
         if (options.rctx != null) {
             this.pathParserStates = new int[options.rctx.pathParsers.length];
             Arrays.fill(this.pathParserStates, AutomatonState.START);
@@ -174,12 +174,12 @@ public class State implements Cloneable {
     
     /** Returns time in seconds since epoch */
     public long getTimeSeconds() {
-        return time / 1000;
+        return this.timeMilliseconds / 1000;
     }
 
     /** returns the length of the trip in seconds up to this state */
     public long getElapsedTimeSeconds() {
-        return Math.abs(getTimeSeconds() - stateData.startTime);
+        return Math.abs(getTimeSeconds() - stateData.startTimeSeconds);
     }
 
     public TripTimes getTripTimes() {
@@ -194,7 +194,7 @@ public class State implements Cloneable {
      * (i.e. it will be clamped to zero).
      * This is used in lieu of reverse optimization in Analyst.
      */
-    public long getActiveTime () {
+    public long getActiveTimeSeconds() {
         long clampInitialWait = stateData.opt.clampInitialWait;
 
         long initialWait = stateData.initialWaitTime;
@@ -391,7 +391,7 @@ public class State implements Cloneable {
     }
 
     public long getStartTimeSeconds() {
-        return stateData.startTime;
+        return stateData.startTimeSeconds;
     }
 
     /**
@@ -471,7 +471,7 @@ public class State implements Cloneable {
     }
 
     public long getTimeInMillis() {
-        return time;
+        return this.timeMilliseconds;
     }
 
     public boolean similarRouteSequence(State that) {
@@ -675,7 +675,7 @@ public class State implements Cloneable {
             if (getElapsedTimeSeconds() != reversed.getElapsedTimeSeconds())
                 LOG.warn("Optimization changed time: before " + this.getElapsedTimeSeconds() + " after "
                         + reversed.getElapsedTimeSeconds());
-            if (getActiveTime() <= reversed.getActiveTime())
+            if (getActiveTimeSeconds() <= reversed.getActiveTimeSeconds())
                 // NOTE: this can happen and it isn't always bad (i.e. it doesn't always mean that
                 // reverse-opt got called when it shouldn't have). Imagine three lines A, B and C
                 // A trip takes line A at 7:00 and arrives at the first transit center at 7:30, where line
@@ -686,7 +686,7 @@ public class State implements Cloneable {
                 // there is not another possible trip. The waiting time will get pushed towards the
                 // the beginning, but not all the way.
                 LOG.warn("Optimization did not decrease active time: before "
-                        + this.getActiveTime() + " after " + reversed.getActiveTime()
+                        + this.getActiveTimeSeconds() + " after " + reversed.getActiveTimeSeconds()
                         + ", boardings: " + this.getNumBoardings());
             if (reversed.getWeight() < this.getBackState().getWeight())
                 // This is possible; imagine a trip involving three lines, line A, line B and

@@ -77,7 +77,7 @@ public class EarliestArrivalShortestPathTree extends AbstractShortestPathTree {
      ****/
 
     private boolean earlier (State s0, State s1) {
-        return s0.getActiveTime() < s1.getActiveTime();
+        return s0.getActiveTimeSeconds() < s1.getActiveTimeSeconds();
     }
     
     @Override

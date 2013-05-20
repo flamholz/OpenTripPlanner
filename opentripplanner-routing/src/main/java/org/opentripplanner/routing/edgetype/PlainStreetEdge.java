@@ -259,16 +259,15 @@ public class PlainStreetEdge extends StreetEdge implements Cloneable {
             return null;
         }
 
-        // Automobiles have variable speeds depending on the edge type
         double speed = calculateSpeed(options, traverseMode);
-        
-        double time = length / speed;
+        double timeSeconds = length / speed;
         double weight;
+
         // TODO(flamholz): factor out this bike, wheelchair and walking specific logic to somewhere central.
         if (options.wheelchairAccessible) {
             weight = elevationProfileSegment.getSlopeSpeedEffectiveLength() / speed;
         } else if (traverseMode.equals(TraverseMode.BICYCLE)) {
-            time = elevationProfileSegment.getSlopeSpeedEffectiveLength() / speed;
+            timeSeconds = elevationProfileSegment.getSlopeSpeedEffectiveLength() / speed;
             switch (options.optimize) {
             case SAFE:
                 weight = elevationProfileSegment.getBicycleSafetyEffectiveLength() / speed;
@@ -302,9 +301,9 @@ public class PlainStreetEdge extends StreetEdge implements Cloneable {
         } else {
             if (options.isWalkingBike()) {
                 // take slopes into account when walking bikes
-                time = elevationProfileSegment.getSlopeSpeedEffectiveLength() / speed;
+                timeSeconds = elevationProfileSegment.getSlopeSpeedEffectiveLength() / speed;
             }
-            weight = time;
+            weight = timeSeconds;
             if (traverseMode.equals(TraverseMode.WALK)) {
                 // take slopes into account when walking
                 double costs = ElevationUtils.getWalkCostsForSlope(length, elevationProfileSegment.getMaxSlope());
@@ -312,7 +311,9 @@ public class PlainStreetEdge extends StreetEdge implements Cloneable {
                 // for the walkspeed set by the user
                 double elevationUtilsSpeed = 4.0 / 3.0;
                 weight = costs * (elevationUtilsSpeed / speed);
-                time = weight; //treat cost as time, as in the current model it actually is the same (this can be checked for maxSlope == 0)
+                
+                // Treat cost as time, as in the current model it actually is the same (this can be checked for maxSlope == 0)
+                timeSeconds = weight;
                 /*
                 // debug code
                 if(weight > 100){
@@ -379,13 +380,15 @@ public class PlainStreetEdge extends StreetEdge implements Cloneable {
                 s1.incrementWalkDistance(realTurnCost / 100);  // just a tie-breaker
             }
 
-            long turnTime = (long) Math.ceil(realTurnCost);
-            time += turnTime;
+            timeSeconds += realTurnCost;  // Turn costs are in seconds.
             weight += options.turnReluctance * realTurnCost;
         }
 
-        int timeLong = (int) Math.ceil(time);
-        s1.incrementTimeInSeconds(timeLong);
+        int timeMilliseconds = (int) Math.ceil(timeSeconds * 1000);
+        s1.incrementTimeInMilliseconds(timeMilliseconds);
+        //int timeSeconds = (int) Math.ceil(timeSeconds);
+        //s1.incrementTimeInSeconds((int) Math.ceil(timeSeconds));
+        
         
         s1.incrementWeight(weight);
         if (!traverseMode.isDriving()) {
